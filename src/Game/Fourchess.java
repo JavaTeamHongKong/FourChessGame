@@ -1,10 +1,10 @@
-package Game;
+package com.company;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class Fourchess implements ActionListener {
+public class FourChess implements ActionListener {
     //Setting up ALL the variables
     JFrame window = new JFrame("Four Chess");
 
@@ -15,8 +15,9 @@ public class Fourchess implements ActionListener {
             mnuAbout = new JMenuItem("About");
 
     JButton btn1v1 = new JButton("Player vs Player"),
-            btn1vCPU = new JButton("Player vs Computer"),
             btnQuit = new JButton("Quit"),
+            btnSetName = new JButton("Set Player Names"),
+            btnContinue = new JButton("Continue..."),
             btnTryAgain = new JButton("Try Again?");
     JButton btnEmpty[] = new JButton[17];
 
@@ -34,7 +35,7 @@ public class Fourchess implements ActionListener {
             lblMode = new JLabel("", JLabel.LEFT);
     JTextArea txtMessage = new JTextArea();
 
-    final int winCombo[][] = new int[][]{
+    final int winGame[][] = new int[][]{
             {1, 2, 3, 4}, {1, 5, 9, 13},
             {5, 6, 7, 8}, {2, 6, 10, 14},
             {9, 10, 11, 12}, {3, 7, 11, 15},
@@ -42,17 +43,13 @@ public class Fourchess implements ActionListener {
             {1, 6, 11, 16}, {4, 7, 10, 13}
 /*Horizontal Wins*/	/*Vertical Wins*/ /*Diagonal Wins*/
     };
-    final int X = 535;
-    final int Y = 535;
-    final int mainColorR = 50;
-    final int mainColorG = 50;
-    final int mainColorB = 50;
+    int X = 500;                      //size of window vertical
+    int Y = 500;                      //size of window horizontal
+    int mainColorR = 50;             // size of lettering - FIRST GAMER
+    int mainColorG = 50;
+    int mainColorB = 50;
     int mainColorE = 50;
-    final int btnColorR = 70;
-    final int btnColorG = 70;
-    final int btnColorB = 70;
-    final int btnColorE = 70;
-    Color clrBtnWonColor = new Color(190, 190, 190, 190);
+
     int turn = 1,
             player1Won = 0, player2Won = 0,
             wonNumber1 = 1, wonNumber2 = 1, wonNumber3 = 1, wonNumber4 = 1,
@@ -64,11 +61,10 @@ public class Fourchess implements ActionListener {
             Player1 = "Player 1", Player2 = "Player 2",
             tempPlayer2 = "Player 2";
 
-
-    public Fourchess() {    //Setting game properties and layout and sytle...
+    public FourChess() {    //Setting game properties and layout and sytle...
         //Setting window properties:
         window.setSize(X, Y);
-        window.setLocation(300, 300);
+        window.setLocation(100, 100);              //where to show the window in desktop on the computer
         //window.setResizable(false);
         window.setLayout(new BorderLayout());
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -78,13 +74,13 @@ public class Fourchess implements ActionListener {
         pnlTop.setLayout(new FlowLayout(FlowLayout.CENTER));
         pnlBottom.setLayout(new FlowLayout(FlowLayout.CENTER));
 
-        pnlNewGame.setBackground(new Color(mainColorR - 50, mainColorG - 50, mainColorB - 50, mainColorE = 50));
-        pnlMenu.setBackground(new Color((mainColorR - 50), (mainColorG - 50), (mainColorB - 50), (mainColorE = 50)));
+        pnlNewGame.setBackground(new Color(mainColorR - 50, mainColorG - 50, mainColorB - 50, mainColorE - 50));
+        pnlMenu.setBackground(new Color((mainColorR - 50), (mainColorG - 50), (mainColorB - 50), (mainColorE - 50)));
         pnlMain.setBackground(new Color(mainColorR, mainColorG, mainColorB, mainColorE));
         pnlTop.setBackground(new Color(mainColorR, mainColorG, mainColorB, mainColorE));
         pnlBottom.setBackground(new Color(mainColorR, mainColorG, mainColorB, mainColorE));
 
-        //Setting up Panel QuitNTryAgain
+        //Setting up Panel QuitNTryAgain in row
         pnlQuitNTryAgain.setLayout(new GridLayout(1, 2, 2, 2));
         pnlQuitNTryAgain.add(btnTryAgain);
         pnlQuitNTryAgain.add(btnQuit);
@@ -97,12 +93,13 @@ public class Fourchess implements ActionListener {
 
         //Adding buttons to NewGame panel
         pnlNewGame.setLayout(new GridLayout(1, 1, 2, 10));
+        pnlNewGame.add(btnContinue);
         pnlNewGame.add(btn1v1);
-        pnlNewGame.add(btn1vCPU);
+        pnlNewGame.add(btnSetName);
 
         //Setting Button propertied
         btnTryAgain.setEnabled(false);
-
+        btnContinue.setEnabled(false);
 
         //Setting txtMessage Properties
         txtMessage.setBackground(new Color(mainColorR - 30, mainColorG - 30, mainColorB - 30, mainColorE - 30));
@@ -115,22 +112,24 @@ public class Fourchess implements ActionListener {
         mnuInstruction.addActionListener(this);
         mnuAbout.addActionListener(this);
         btn1v1.addActionListener(this);
-        btn1vCPU.addActionListener(this);
+        //btn1vCPU.addActionListener(this);
         btnQuit.addActionListener(this);
+        btnSetName.addActionListener(this);
+        btnContinue.addActionListener(this);
         btnTryAgain.addActionListener(this);
 
         //Setting up the playing field
-        pnlPlayingField.setLayout(new GridLayout(5, 5, 5, 2));
-        pnlPlayingField.setBackground(Color.black);
+        pnlPlayingField.setLayout(new GridLayout(4, 4, 3, 3));
+        pnlPlayingField.setBackground(Color.RED);
         for (int i = 1; i <= 16; i++) {
             btnEmpty[i] = new JButton();
-            btnEmpty[i].setBackground(new Color(btnColorR, btnColorG, btnColorB, btnColorE));
+            //btnEmpty[i].setBackground(new Color(btnColorR, btnColorG, btnColorB, btnColorE));
             btnEmpty[i].addActionListener(this);
-            pnlPlayingField.add(btnEmpty[i]);//	Playing Field is Compelte
+            pnlPlayingField.add(btnEmpty[i]);   //	Playing Field is Complete
         }
 
         //Adding everything needed to pnlMenu and pnlMain
-        lblMode.setForeground(Color.white);
+        lblMode.setForeground(Color.WHITE);
         pnlMenu.add(lblMode);
         pnlMenu.add(mnuMain);
         pnlMain.add(lblTitle);
@@ -140,11 +139,7 @@ public class Fourchess implements ActionListener {
         window.add(pnlMain, BorderLayout.CENTER);
         window.setVisible(true);
     }
-
     public static void main(String[] args) {
-        new Fourchess();//	Calling the class construtor.
-        //		PROGRAM STARTS HERE!
+        new FourChess(); //	Calling the class constructor.
+        // PROGRAM STARTS HERE!
     }
-
-
-}
