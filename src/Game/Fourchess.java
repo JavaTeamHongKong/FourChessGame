@@ -1,11 +1,8 @@
 package com.company;
 
-import Game.CPU;
-
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 
 public class FourChess implements ActionListener {
     //Setting up ALL the variables
@@ -22,7 +19,7 @@ public class FourChess implements ActionListener {
             btnSetName = new JButton("Set Player Names"),
             btnContinue = new JButton("Continue..."),
             btnTryAgain = new JButton("Try Again?");
-    JButton btnEmpty[] = new JButton[17];
+    JButton btnEmpty[] = new JButton[sizeOfMatrix*sizeOfMatrix];
 
     JPanel pnlNewGame = new JPanel(),
             pnlMenu = new JPanel(),
@@ -38,28 +35,28 @@ public class FourChess implements ActionListener {
             lblMode = new JLabel("", JLabel.LEFT);
     JTextArea txtMessage = new JTextArea();
 
-    final int winGame[][] = new int[][]{
-            {1, 2, 3, 4}, {1, 5, 9, 13},
-            {5, 6, 7, 8}, {2, 6, 10, 14},
-            {9, 10, 11, 12}, {3, 7, 11, 15},
-            {13, 14, 15, 16}, {4, 8, 12, 16},
-            {1, 6, 11, 16}, {4, 7, 10, 13}
+//    final int winGame[][] = new int[][]{
+//            {1, 2, 3, 4}, {1, 5, 9, 13},
+//            {5, 6, 7, 8}, {2, 6, 10, 14},
+//            {9, 10, 11, 12}, {3, 7, 11, 15},
+//            {13, 14, 15, 16}, {4, 8, 12, 16},
+//            {1, 6, 11, 16}, {4, 7, 10, 13}
 /*Horizontal Wins*/	/*Vertical Wins*/ /*Diagonal Wins*/
-    };
+//    };
     int X = 500;                      //size of window vertical
     int Y = 500;                      //size of window horizontal
     int mainColorR = 50;             // size of lettering - FIRST GAMER
     int mainColorG = 50;
     int mainColorB = 50;
     int mainColorE = 50;
+    static int sizeOfMatrix = 7;
 
     int turn = 1,
             player1Won = 0, player2Won = 0,
             wonNumber1 = 1, wonNumber2 = 1, wonNumber3 = 1, wonNumber4 = 1,
             option;
     boolean inGame = false,
-            CPUGame = false,
-            win = false;
+             win = false;
     String message,
             Player1 = "Player 1", Player2 = "Player 2",
             tempPlayer2 = "Player 2";
@@ -122,9 +119,9 @@ public class FourChess implements ActionListener {
         btnTryAgain.addActionListener(this);
 
         //Setting up the playing field
-        pnlPlayingField.setLayout(new GridLayout(4, 4, 3, 3));
+        pnlPlayingField.setLayout(new GridLayout(sizeOfMatrix, sizeOfMatrix, 3, 3));
         pnlPlayingField.setBackground(Color.RED);
-        for (int i = 1; i <= 16; i++) {
+        for (int i = 0; i < sizeOfMatrix * sizeOfMatrix; i++) {
             btnEmpty[i] = new JButton();
             //btnEmpty[i].setBackground(new Color(btnColorR, btnColorG, btnColorB, btnColorE));
             btnEmpty[i].addActionListener(this);
@@ -146,12 +143,11 @@ public class FourChess implements ActionListener {
         new FourChess(); //	Calling the class constructor.
         // PROGRAM STARTS HERE!
     }
-
     /*
-                -------------------------
-                Start of all METHODS.	|
-                -------------------------
-        */
+            -------------------------
+            Start of all METHODS.	|
+            -------------------------
+    */
     public void showGame() {    //	Shows the Playing Field
         //	*IMPORTANT*- Does not start out brand new (meaning just shows what it had before)
         clearPanelSouth();
@@ -166,14 +162,15 @@ public class FourChess implements ActionListener {
         pnlMain.add(pnlBottom, BorderLayout.SOUTH);
         pnlPlayingField.requestFocus();
         inGame = true;
-        checkTurn();
+        turn();
         checkWinStatus();
     }
     //-----------------------------------------------------------------------------------------------------------------------------------
     public void newGame() {    //	Sets all the game required variables to default
         //	and then shows the playing field.
         //	(Basically: Starts a new 1v1 Game)
-        for (int i = 1; i < 16; i++) {
+
+        for (int i = 0; i < sizeOfMatrix*sizeOfMatrix; i++) {
             btnEmpty[i].setText("");
             btnEmpty[i].setEnabled(true);
         }
@@ -192,65 +189,100 @@ public class FourChess implements ActionListener {
         pnlMain.add(pnlTop);
     }
     //-----------------------------------------------------------------------------------------------------------------------------------
-    public void checkWin() {        //	checks if there are 4 symbols in a row vertically, diagonally, or horizontally.
-        //	then shows a message and disables buttons. If the game is over then it asks
-        //	if you want to play again.
-        for (int i = 0; i < 15; i++) {
-            if (
-                    !btnEmpty[winGame[i][0]].getText().equals("") &&
-                            btnEmpty[winGame[i][0]].getText().equals(btnEmpty[winGame[i][1]].getText()) &&
-                            //								if {0 == 1 && 1 == 2}
-                            btnEmpty[winGame[i][1]].getText().equals(btnEmpty[winGame[i][2]].getText()) &&
-                            //								if {2 == 3}
-                            btnEmpty[winGame[i][2]].getText().equals(btnEmpty[winGame[i][3]].getText())) {
-                /*
-					The way this checks the if someone won is:
-					First: it checks if the btnEmpty[x] is not equal to an empty string-	x being the array number
-						inside the multi-dimensional array winGame[checks inside each of the 7 sets][the first number]
-					Second: it checks if btnEmpty[x] is equal to btnEmpty[y]- x being winGame[each set][the first number]
-						y being winGame[each set the same as x][the second number] (So basically checks if the first and
-						second number in each set is equal to each other)
-					Third: it checks if btnEmtpy[y] is eual to btnEmpty[z]- y being the same y as last time and z being
-						winGame[each set as y][the third number]
-					Fourth: it checks if btnEmtpy[y] is eual to btnEmpty[z]- y being the same y as last time and z being
-						winGame[each set as y][the fourth number]
-					Conclusion:	So basically it checks if it is equal to the btnEmpty is equal to each set of numbers
-				*/
-                win = true;
-                wonNumber1 = winGame[i][0];
-                wonNumber2 = winGame[i][1];
-                wonNumber3 = winGame[i][2];
-                wonNumber4 = winGame[i][3];
-                break;
+
+//    public boolean compare_cells(int r1, int c1, int r2, int c2) {
+//        return btnEmpty[winGame[r1][c1]].getText().equals(btnEmpty[winGame[r2][c2]].getText());
+//    }
+    private int checkHorizontal() {
+        for (int i = 0; i < sizeOfMatrix; i++) {
+            int counter1 = 0;
+            int counter2 = 0;
+            for (int j = 0; j < sizeOfMatrix; j++) {
+                int index = i * sizeOfMatrix + j;
+                if (btnEmpty[index].getText().equals("1 GAMER")) {
+                    counter1++;
+                    counter2 = 0;
+                } else if (btnEmpty[index].getText().equals("2 GAMER")) {
+                    counter2++;
+                    counter1 = 0;
+                }else if(btnEmpty[index].getText().equals("")) {
+                    counter1 = 0;
+                    counter2 = 0;
+                }
+
+                if (counter1 == 4) {
+                    return 1;
+                }
+                if (counter2 == 4) {
+                    return 2;
+                }
             }
         }
-        if (win || (!win && turn > 16)) {
-            if (win) {
-                if (btnEmpty[wonNumber1].getText().equals("FIRST GAMER")) {
-                    message = Player1 + " Has won";
-                    player1Won++;
-                } else {
-                    message = Player2 + " Has won";
-                    player2Won++;
+        return 0;
+    }
+    private int checkVertical() {
+        for (int i = 0; i < sizeOfMatrix; i++) {
+            int counter1 = 0;
+            int counter2 = 0;
+            for (int j = 0; j < sizeOfMatrix; j++) {
+                int index = j * sizeOfMatrix + i;
+                if (btnEmpty[index].getText().equals("1 GAMER")) {
+                    counter1++;
+                    counter2 = 0;
+                } else if (btnEmpty[index].getText().equals("2 GAMER")) {
+                    counter2++;
+                    counter1 = 0;
+                }else if(btnEmpty[index].getText().equals("")) {
+                    counter1 = 0;
+                    counter2 = 0;
                 }
-            } else if (!win && turn > 15)
-                message = "Both players have tied!\nBetter luck next time.";
-            showMessage(message);
-            for (int i = 1; i <= 16; i++) {
-                btnEmpty[i].setEnabled(false);
+
+                if (counter1 == 4) {
+                    return 1;
+                }
+                if (counter2 == 4) {
+                    return 2;
+                }
             }
-            btnTryAgain.setEnabled(true);
-            checkWinStatus();
-        } else
-            checkTurn();
+        }
+        return 0;
+    }
+    public void checkWin() {
+        int result = checkHorizontal();
+        if (result == 1){
+            message = Player1 + " Has won! Game over!";
+            showMessage(message);
+            newGame();
+        }
+        if (result == 2){
+            message = Player2 + " Has won! Game over!";
+            showMessage(message);
+            newGame();
+        }
+        result = checkVertical();
+        if (result == 1){
+            message = Player1 + " Has won! Game over!";
+            showMessage(message);
+            newGame();
+        }
+        if (result == 2){
+            message = Player2 + " Has won! Game over!";
+            showMessage(message);
+            newGame();
+        }
+
     }
 
     //-----------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
     public void AI() {
         int computerButton;
         if (turn <= 16) {
             turn++;
-            computerButton = CPU.doMove(
+            computerButton = Buttons.doMove(
                     btnEmpty[1], btnEmpty[2], btnEmpty[3], btnEmpty[4],
                     btnEmpty[5], btnEmpty[6], btnEmpty[7], btnEmpty[8],
                     btnEmpty[9], btnEmpty[10], btnEmpty[11], btnEmpty[12],
@@ -258,7 +290,7 @@ public class FourChess implements ActionListener {
             if (computerButton == 0)
                 Random();
             else {
-                btnEmpty[computerButton].setText("SECOND GAMER");
+                btnEmpty[computerButton].setText("2 GAMER");
                 btnEmpty[computerButton].setEnabled(false);
             }
             checkWin();
@@ -273,8 +305,8 @@ public class FourChess implements ActionListener {
             while (random == 0) {
                 random = (int) (Math.random() * 10);
             }
-            if (CPU.doRandomMove(btnEmpty[random])) {
-                btnEmpty[random].setText("SECOND GAMER");
+            if (Buttons.doRandomMove(btnEmpty[random])) {
+                btnEmpty[random].setText("2 GAMER");
                 btnEmpty[random].setEnabled(false);
             } else {
                 Random();
@@ -283,12 +315,12 @@ public class FourChess implements ActionListener {
     }
 
     //-----------------------------------------------------------------------------------------------------------------------------------
-    public void checkTurn() {
+    public void turn() {
         String whoTurn;
         if (!(turn % 2 == 0)) {
-            whoTurn = Player1 + " FIRST GAMER";
+            whoTurn = Player1 + " 1 GAMER";
         } else {
-            whoTurn = Player2 + " SECOND GAMER";
+            whoTurn = Player2 + " 2 GAMER";
         }
         lblTurn.setText("Turn: " + whoTurn);
     }
@@ -358,8 +390,8 @@ public class FourChess implements ActionListener {
 
     //-----------------------------------------------------------------------------------------------------------------------------------
     public void clearPanelSouth() {    //Removes all the possible panels
-        //that pnlMain, pnlTop, pnlBottom
-        //could have.
+                                       //that pnlMain, pnlTop, pnlBottom
+                                       //could have.
         pnlMain.remove(lblTitle);
         pnlMain.remove(pnlTop);
         pnlMain.remove(pnlBottom);
@@ -369,26 +401,25 @@ public class FourChess implements ActionListener {
         pnlBottom.remove(lblTurn);
         pnlBottom.remove(pnlQuitNTryAgain);
     }
-    /*
-            -------------------------------------
-            End of all non-Abstract METHODS.		|
-            -------------------------------------
-    */
+/*
+		-------------------------------------
+		End of all non-Abstract METHODS.		|
+		-------------------------------------
+*/
     //-------------------ACTION PERFORMED METHOD (Button Click --> Action?)-------------------------//
     public void actionPerformed(ActionEvent click) {
         Object source = click.getSource();
-        for (int i = 1; i <= 16; i++) {
+        for (int i = 0; i < sizeOfMatrix*sizeOfMatrix; i++) {
             if (source == btnEmpty[i] && turn < 18) {
                 if (!(turn % 2 == 0))
                     btnEmpty[i].setText("1 GAMER");
                 else
                     btnEmpty[i].setText("2 GAMER");
+
                 btnEmpty[i].setEnabled(false);
                 pnlPlayingField.requestFocus();
                 turn++;
                 checkWin();
-                if (CPUGame && win == false)
-                    AI();
             }
         }
         if (source == mnuNewGame || source == mnuInstruction || source == mnuAbout) {
@@ -400,7 +431,7 @@ public class FourChess implements ActionListener {
             } else if (source == mnuInstruction || source == mnuAbout) {
                 if (source == mnuInstruction) {                // Instructions
                     message = "Instructions:\n\n" +
-                            "Your goal is to be the first player to get 4 FIRST GAMER's or SECOND GAMER's in a\n" +
+                            "Your goal is to be the first player to get 4 1 GAMER's or 2 GAMER's in a\n" +
                             "row. (horizontally, diagonally, or vertically)\n" +
                             Player1 + ": 1 GAMER\n" +
                             Player2 + ": 2 GAMER\n";
@@ -416,8 +447,8 @@ public class FourChess implements ActionListener {
         } else if (source == btn1v1 ) {
             if (inGame) {
                 option = askMessage("If you start a new game," +
-                                "your current game will be lost..." + "\n" +
-                                "Are you sure you want to continue?",
+                        "your current game will be lost..." + "\n" +
+                        "Are you sure you want to continue?",
                         "Quit Game?", JOptionPane.YES_NO_OPTION
                 );
                 if (option == JOptionPane.YES_OPTION)
@@ -438,7 +469,7 @@ public class FourChess implements ActionListener {
                 }
             }
         } else if (source == btnContinue) {
-            checkTurn();
+            turn();
             showGame();
         } else if (source == btnSetName) {
             askUserForPlayerNames();
