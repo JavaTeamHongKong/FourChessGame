@@ -35,14 +35,7 @@ public class FourChess implements ActionListener {
             lblMode = new JLabel("", JLabel.LEFT);
     JTextArea txtMessage = new JTextArea();
 
-//    final int winGame[][] = new int[][]{
-//            {1, 2, 3, 4}, {1, 5, 9, 13},
-//            {5, 6, 7, 8}, {2, 6, 10, 14},
-//            {9, 10, 11, 12}, {3, 7, 11, 15},
-//            {13, 14, 15, 16}, {4, 8, 12, 16},
-//            {1, 6, 11, 16}, {4, 7, 10, 13}
-/*Horizontal Wins*/	/*Vertical Wins*/ /*Diagonal Wins*/
-//    };
+
     int X = 500;                      //size of window vertical
     int Y = 500;                      //size of window horizontal
     int mainColorR = 50;             // size of lettering - FIRST GAMER
