@@ -35,7 +35,6 @@ public class FourChess implements ActionListener {
             lblMode = new JLabel("", JLabel.LEFT);
     JTextArea txtMessage = new JTextArea();
 
-
     int X = 500;                      //size of window vertical
     int Y = 500;                      //size of window horizontal
     int mainColorR = 50;             // size of lettering - FIRST GAMER
@@ -267,10 +266,6 @@ public class FourChess implements ActionListener {
     }
 
     //-----------------------------------------------------------------------------------------------------------------------------------
-
-
-
-
     public void AI() {
         int computerButton;
         if (turn <= 16) {
